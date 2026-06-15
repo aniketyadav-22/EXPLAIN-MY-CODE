@@ -110,23 +110,3 @@ Frontend runs at `http://localhost:5173`
 ### Frontend (.env.local)
 - `VITE_API_BASE_URL` - Backend API URL
 
-## Deployment
-
-### Backend on Render
-1. Create Dockerfile (included)
-2. Connect GitHub repo to Render
-3. Add environment variables
-4. Deploy
-
-### Frontend on Vercel
-1. Connect GitHub repo
-2. Set `VITE_API_BASE_URL` environment variable
-3. Deploy
-
-## Next Steps
-
-1. [ ] Get Groq API key at https://groq.com
-2. [ ] Set up PostgreSQL for production
-3. [ ] Add GitHub repo integration (stretch feature)
-4. [ ] Implement streaming responses (stretch feature)
-5. [ ] Add line-by-line annotation mode (stretch feature)
