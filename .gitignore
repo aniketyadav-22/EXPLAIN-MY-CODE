@@ -1,0 +1,72 @@
+# Python & Django
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.env
+.env.local
+*.db
+*.sqlite3
+db.sqlite3
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Node & npm
+node_modules/
+npm-debug.log
+yarn-error.log
+.npm
+dist/
+frontend/dist/
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+.history/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+logs/
+*.log
+
+# Misc
+.env.example.bak
+*.bak
