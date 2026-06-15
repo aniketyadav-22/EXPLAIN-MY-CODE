@@ -14,6 +14,7 @@ from .serializers import (
     CreateExplanationSerializer,
     FeedbackCreateSerializer,
     AnalyticsSerializer,
+    RegisterSerializer,
 )
 
 
@@ -245,3 +246,19 @@ def analytics(request):
         })
     
     return Response(analytics_data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register(request):
+    """POST /api/auth/register/ — Create a new user account"""
+    serializer = RegisterSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    user = serializer.save()
+    
+    return Response({
+        'message': 'Account created successfully',
+        'username': user.username,
+    }, status=status.HTTP_201_CREATED)

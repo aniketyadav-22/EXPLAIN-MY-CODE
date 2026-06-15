@@ -13,6 +13,7 @@ urlpatterns = [
     # Auth (JWT)
     path('auth/token/', TokenObtainPairView.as_view(), name='token-obtain-pair'),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+    path('auth/register/', views.register, name='register'),
     
     # History & Analytics (auth required)
     path('history/', views.history, name='history'),

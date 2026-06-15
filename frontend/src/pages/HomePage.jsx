@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import CodeInput from '../components/CodeInput';
 import ComplexitySlider from '../components/ComplexitySlider';
 import ExplanationPanel from '../components/ExplanationPanel';
+import { useToast } from '../components/Toast';
 import { explainApi } from '../api/client';
 
 export default function HomePage() {
@@ -15,7 +15,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [explanationCache, setExplanationCache] = useState({});
-  const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const cacheKey = (hash, lv) => `${hash}-${lv}`;
 
@@ -28,18 +28,22 @@ export default function HomePage() {
     try {
       const response = await explainApi.explainCode(codeText, lang, level);
       const { snippet_id, explanation: exp } = response.data;
-      
+
       setSnippetId(snippet_id);
       setExplanationId(exp.id);
       setExplanation(exp.explanation_text);
-      
-      // Cache the explanation
+
       setExplanationCache((prev) => ({
         ...prev,
         [cacheKey(response.data.snippet_id, level)]: exp,
       }));
+
+      if (response.data.cached) {
+        showToast('Loaded from cache — instant result!', 'info');
+      }
     } catch (err) {
       setError('Failed to get explanation. Please try again.');
+      showToast('Failed to get explanation', 'error');
     } finally {
       setLoading(false);
     }
@@ -47,6 +51,8 @@ export default function HomePage() {
 
   const handleLevelChange = async (newLevel) => {
     setLevel(newLevel);
+    if (!code) return;
+
     setError('');
     setLoading(true);
 
@@ -62,16 +68,17 @@ export default function HomePage() {
     try {
       const response = await explainApi.explainCode(code, language, newLevel);
       const { explanation: exp } = response.data;
-      
+
       setExplanationId(exp.id);
       setExplanation(exp.explanation_text);
-      
+
       setExplanationCache((prev) => ({
         ...prev,
         [key]: exp,
       }));
     } catch (err) {
       setError('Failed to get explanation. Please try again.');
+      showToast('Failed to get explanation', 'error');
     } finally {
       setLoading(false);
     }
@@ -80,76 +87,62 @@ export default function HomePage() {
   const handleFeedback = async (expId, isHelpful, comment) => {
     try {
       await explainApi.sendFeedback(expId, isHelpful, comment);
-      alert(isHelpful ? 'Thanks for the feedback!' : 'Thanks for helping us improve!');
+      showToast(
+        isHelpful ? 'Thanks for the positive feedback!' : 'Thanks for helping us improve!',
+        'success'
+      );
     } catch (err) {
-      console.error('Feedback error:', err);
+      showToast('Failed to submit feedback', 'error');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Explain My Code Like I'm 5
-          </h1>
-          <p className="text-lg text-gray-600 mb-4">
-            Get AI-powered code explanations at your preferred complexity level
-          </p>
-          
-          <div className="flex gap-4">
-            <button
-              onClick={() => navigate('/history')}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              📚 History
-            </button>
-            <button
-              onClick={() => navigate('/analytics')}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              📊 Analytics
-            </button>
-            <button
-              onClick={() => {
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('refresh_token');
-                navigate('/login');
-              }}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-            >
-              🚪 Logout
-            </button>
-          </div>
-        </header>
+    <div className="page-container">
+      {/* Hero Section */}
+      <header className="text-center mb-12 animate-fade-in-up">
+        <h1 className="text-5xl sm:text-6xl font-black mb-4">
+          <span className="text-gradient">Explain My Code</span>
+          <br />
+          <span className="text-white">Like I'm 5</span>
+        </h1>
+        <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          Get AI-powered code explanations at your preferred complexity level —
+          from beginner-friendly analogies to expert-level code reviews.
+        </p>
+      </header>
 
-        {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-700">{error}</p>
-          </div>
-        )}
+      {/* Error Banner */}
+      {error && (
+        <div className="error-banner">
+          <p>{error}</p>
+        </div>
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left sidebar */}
-          <div className="space-y-6">
+      {/* Main Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left sidebar */}
+        <div className="space-y-6">
+          <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             <CodeInput onExplain={handleExplain} loading={loading} />
+          </div>
+          <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
             <ComplexitySlider
               level={level}
               onChange={handleLevelChange}
               disabled={loading || !code}
             />
           </div>
+        </div>
 
-          {/* Main content */}
-          <div className="lg:col-span-2">
-            <ExplanationPanel
-              explanation={explanation}
-              loading={loading}
-              onFeedback={handleFeedback}
-              currentLevel={level}
-              explanationId={explanationId}
-            />
-          </div>
+        {/* Main content */}
+        <div className="lg:col-span-2 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+          <ExplanationPanel
+            explanation={explanation}
+            loading={loading}
+            onFeedback={handleFeedback}
+            currentLevel={level}
+            explanationId={explanationId}
+          />
         </div>
       </div>
     </div>
