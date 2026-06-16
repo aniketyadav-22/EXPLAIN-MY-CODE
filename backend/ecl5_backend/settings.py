@@ -147,6 +147,9 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "https://explain-my-code-g4g7ilqbr-aniketyadav22work-6105s-projects.vercel.app",
 ]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.vercel\.app$",
+]
 CORS_ALLOW_CREDENTIALS = True
 
 # Groq API Configuration
