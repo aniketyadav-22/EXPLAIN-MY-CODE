@@ -145,7 +145,7 @@ SIMPLE_JWT = {
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
-    "https://explain-my-code-g4g7ilqbr-aniketyadav22work-6105s-projects.vercel.app/",
+    "https://explain-my-code-g4g7ilqbr-aniketyadav22work-6105s-projects.vercel.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
